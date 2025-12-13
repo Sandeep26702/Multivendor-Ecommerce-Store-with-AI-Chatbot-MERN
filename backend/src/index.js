@@ -1,5 +1,6 @@
 const express = require('express');
 const connectDB = require('./db/db');
+const bodyParser = require('body-parser');
 
 const app = express();
 
@@ -9,6 +10,29 @@ app.use(express.json());
 app.get("/", (req, res) => {
     res.send({ message: "Welcome to Bazar backend system" });
 });
+
+app.use(bodyParser.json());
+
+const adminRoutes = require('./routers/AdminRoutes.js');
+const sellerRoutes = require('./routers/SellerRoutes.js');
+
+
+
+
+
+app.use("/sellers", sellerRoutes);
+app.use("/admin", adminRoutes);
+
+
+
+
+
+
+
+
+
+
+
 
 const port = 5000;
 

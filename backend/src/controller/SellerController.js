@@ -1,17 +1,20 @@
-const sellerService = require("../service/sellerService")
+const VerificationCode = require("../model/VerificationCode");
+const sellerService = require("../service/SellerService");
+const jwtProvider = require("../util/jwtProvider");
+const UserRoles = require("../domain/UserRole");
 
 class SellerController{
  
     //bearer token
     async getSellerProfile(req,res){
         try{
-             const jwt=req.headers.authorizations.split(" ")[1]
+             const jwt=req.headers.authorization.split(" ")[1]
              const seller = await sellerService.getSellerProfile(jwt);
 
              res.status(200).json(seller);
         } catch (error){
             res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
 
         }
     }
@@ -23,7 +26,7 @@ class SellerController{
              res.status(200).json({message:"seller create sucessfully"});
         } catch (error){
             res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
 
         }
     }
@@ -34,10 +37,10 @@ class SellerController{
             const status=req.query.status
             const sellers= await sellerService.getAllSellers(status);             
 
-             res.status(200).json(seller);
+             res.status(200).json(sellers);
         } catch (error){
             res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
 
         }
     }
@@ -50,16 +53,16 @@ class SellerController{
             
 
 
-             res.status(200).json(seller);
+             res.status(200).json(sellers);
         } catch (error){
             res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
 
         }
     }
 
 
-    async updateSeller(req,res){
+    async deleteSeller(req,res){
         try{
             await sellerService.deleteSeller(req.params.id);
 
@@ -67,7 +70,7 @@ class SellerController{
              res.status(200).json({message:"seller deleted..."});
         } catch (error){
             res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
 
         }
     }
@@ -78,10 +81,10 @@ class SellerController{
                 req.params.id,
                 req.params.status
             )
-            res.status(200).json(updatedSeller);
+            res.status(200).json(updateSeller);
         }catch (error) {
              res.status(error instanceof Error ? 404: 500)
-             .jsonn({message:error.messag})
+             .json({message:error.message})
         }
 
         }
@@ -91,10 +94,33 @@ class SellerController{
                 const {otp, email} = req.body;
                 const seller= await sellerService.getSellerByEmail(email);
 
-                
+                const verificationCodeDoc=await VerificationCode.findOne({email});
+
+                if(!verificationCodeDoc || verificationCodeDoc.otp!=otp){
+                    throw new Error("Invalid OTP")
+                }
+
+                const token=jwtProvider.createJwt({email});
+
+                const authResponse={
+                    message:"Login Success",
+                    jwt:token,
+                    role:UserRoles.SELLER
+                }
+
+                return res.status(200).json(authResponse); 
+
+            }catch (error){
+                 res.status(error instanceof Error ? 404: 500)
+             .json({message:error.message})
+
+            }
+
             }
         }
-    }    
+
+        module.exports=new SellerController();
+        
 
 
 

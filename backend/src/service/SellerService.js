@@ -1,3 +1,7 @@
+const Seller = require('../model/Seller');
+const Address = require('../model/Address');
+const jwtProvider = require('../util/jwtProvider');
+
 class SellerService {
 
     async createSeller(sellerData) {
@@ -31,6 +35,7 @@ class SellerService {
     }
 
     async getSellerByEmail(email) {
+        console.log("Email in service:", email);
         const seller = await Seller.findOne({ email });
         if (!seller) {
             throw new Error('Seller not found');
@@ -53,7 +58,15 @@ class SellerService {
     }
 
     async updateSeller(existingSeller,sellerData){
+        return await Seller.findByIdAndUpdate(existingSeller._id, sellerData, {new: true});
+    }
+
+    async deleteSeller(sellerId){
         return await Seller.findByIdAndDelete(sellerId);
+    }
+
+    async updateSellerAccountStatus(sellerId, status){
+        return await Seller.findByIdAndUpdate(sellerId, {accountStatus: status}, {new: true});
     }
 
 }

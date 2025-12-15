@@ -1,4 +1,6 @@
 const {default: mongoose } = require("mongoose");
+const UserRoles = require("../domain/UserRole");
+const AccountStatus = require("../domain/AccountStatus");
 
 const sellerSchema=new mongoose.Schema({
     sellerName:{
@@ -8,7 +10,7 @@ const sellerSchema=new mongoose.Schema({
     mobile:{
         type:Number,
         required:true,
-        unque:true
+        unique:true
     },
     email:{
         type:String,
@@ -50,7 +52,7 @@ const sellerSchema=new mongoose.Schema({
     },
     pincupAddress:{
         type:mongoose.Schema.Types.ObjectId,
-        Ref:'Address'
+        ref:'Address'
     },
     GSTIN:{
         type:String,    
@@ -58,19 +60,19 @@ const sellerSchema=new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['UerRoles.SELLER'],
+        enum:[UserRoles.SELLER],
         default:UserRoles.SELLER
     },
     accountStatus:{
         type:String,
         enum: [AccountStatus.PENDING_VERIFICATION,      
-       AccountStatus .ACTIVE,
-       AccountStatus .INACTIVE,
-      AccountStatus  .SUSPENDED,
-      AccountStatus  .DEACTIVATED,
-       AccountStatus .BANNED, 
-       AccountStatus .CLOSED],
-        default:'AccountStatus.PENDING_VERIFICATION'
+       AccountStatus.ACTIVE,
+       AccountStatus.INACTIVE,
+      AccountStatus.SUSPENDED,
+      AccountStatus.DEACTIVATED,
+       AccountStatus.BANNED, 
+       AccountStatus.CLOSED],
+        default:AccountStatus.PENDING_VERIFICATION
     }
 },{ timestamps:true });
 

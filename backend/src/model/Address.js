@@ -6,7 +6,7 @@ const addressSchema = new mongoose.Schema({
   pincode: {type: Number},
   state: {type: String},    
   address: {type: String},
-  mobile: {type: string},
+  mobile: {type: String},
 },{
     timestamps:true
 })

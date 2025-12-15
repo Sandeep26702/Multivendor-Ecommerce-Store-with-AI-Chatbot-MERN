@@ -1,7 +1,8 @@
-const Seller = require("../models/Seller");
-const VerificationCode = require("../models/VerificationCode");
-const sendVerificationEmail = require("../util/SendEmail");
+const Seller = require("../model/Seller");
+const VerificationCode = require("../model/VerificationCode");
+const sendVerificationEmail = require("../util/sendEmail");
 const generateOTP = require("../util/generateOtp");
+
 
 class AuthService{
 
@@ -10,10 +11,11 @@ class AuthService{
         const SIGNIN_PREFIX="signin_";
 
         if(email.startsWith(SIGNIN_PREFIX)){
-        
-        const  Seller = await Seller.findOne({email:email});
-        if(!Seller) throw new Error("User not found");
+            email = email.substring(SIGNIN_PREFIX.length);
         }
+        
+        const seller = await Seller.findOne({email:email});
+        if(!seller) throw new Error("User not found");
 
             const exitingVerificationCode= await VerificationCode.findOne({email:email});
 
@@ -24,17 +26,15 @@ class AuthService{
         }
 
         const otp=generateOTP();
-        const VerificationCode= new VerificationCode({otp,email});
-        await VerificationCode.save();
+        const verificationCode= new VerificationCode({otp,email});
+        await verificationCode.save();
 
         // send email to user
         const subject="Your Login/signup OTP";
         const body= `<p>Your OTP for login is: <b>${otp}</b></p>`;
 
         await sendVerificationEmail(email,subject,body);
-
-
-        }
     }
+}
 
 module.exports=new AuthService();

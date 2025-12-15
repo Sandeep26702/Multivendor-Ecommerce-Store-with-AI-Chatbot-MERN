@@ -15,11 +15,11 @@ app.use(bodyParser.json());
 
 const adminRoutes = require('./routers/AdminRoutes.js');
 const sellerRoutes = require('./routers/SellerRoutes.js');
+const authRoutes = require('./routers/AuthRoutes.js');
 
 
 
-
-
+app.use("/auth", authRoutes);
 app.use("/sellers", sellerRoutes);
 app.use("/admin", adminRoutes);
 
